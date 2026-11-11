@@ -1,0 +1,172 @@
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme) prefix(tw);
+@import "tailwindcss/utilities.css" layer(utilities) prefix(tw) important;
+
+.artois-rebranding {
+  --color-deep-navy: #0a2748;
+  --color-teal-blue: #2f7b86;
+  --color-vibrant-orange: #c24f00;
+  --color-lavender: #a4a6ce;
+  --color-success: #2e7d32;
+  --color-error: #b3261e;
+  --color-white: #ffffff;
+  --color-gray: #ccd0d5;
+  --color-control-border: #6b7280;
+  --color-placeholder: #6b7280;
+  --color-muted: #4b5563;
+  --color-black: #000000;
+}
+
+/* Tailwind tokens, must stay in sync with the custom properties above (the tw prefix rewrites them to --tw-*). */
+@theme {
+  --font-display: "Inter Variable", sans-serif;
+
+  --color-deep-navy: #0a2748;
+  --color-teal-blue: #2f7b86;
+  --color-vibrant-orange: #c24f00;
+  --color-lavender: #a4a6ce;
+  --color-success: #2e7d32;
+  --color-error: #b3261e;
+  --color-white: #ffffff;
+  --color-gray: #ccd0d5;
+  --color-control-border: #6b7280;
+  --color-placeholder: #6b7280;
+  --color-muted: #4b5563;
+  --color-black: #000000;
+}
+
+/* Keep every custom rule under a page marker so the userscript can run on
+   every *.univ-artois.fr page without leaking styles into other applications. */
+.artois-rebranding {
+  .btn {
+    --background-color: transparent;
+    @apply tw:flex tw:items-center tw:justify-center tw:gap-2 tw:px-4 tw:py-2 tw:text-white tw:font-bold tw:font-display tw:text-lg tw:border-none tw:cursor-pointer tw:rounded-full;
+    background-color: var(--background-color);
+    transition:
+      background-color 150ms ease,
+      box-shadow 150ms ease,
+      transform 150ms ease;
+
+    &.btn-vibrant-orange {
+      --background-color: var(--color-vibrant-orange);
+    }
+  }
+
+  @media (hover: hover) {
+    .btn.btn-vibrant-orange:hover {
+      background-color: #a84400;
+      box-shadow: 0 4px 14px rgb(194 79 0 / 0.28);
+      transform: translateY(-1px);
+    }
+  }
+
+  .btn.btn-vibrant-orange:active {
+    background-color: #8f3a00;
+    box-shadow: none;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn {
+      transition: none;
+    }
+
+    .btn.btn-vibrant-orange:hover,
+    .btn.btn-vibrant-orange:active {
+      transform: none;
+    }
+  }
+
+  .field {
+    @apply tw:relative tw:flex tw:flex-col tw:gap-1;
+
+    &:has(input[type="checkbox"]) {
+      @apply tw:flex-row tw:items-center tw:gap-2;
+    }
+  }
+
+  .field-label {
+    @apply tw:flex tw:flex-wrap tw:items-center tw:gap-2;
+  }
+
+  .field-help {
+    @apply tw:inline-flex tw:size-8 tw:shrink-0 tw:items-center tw:justify-center tw:rounded-full tw:border-0 tw:p-0 tw:cursor-pointer;
+    appearance: none;
+    background-color: transparent;
+    color: var(--color-teal-blue);
+    transition: background-color 150ms ease;
+
+    &[aria-expanded="true"] {
+      background-color: rgb(47 123 134 / 0.1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .field-help {
+      transition: none;
+    }
+  }
+
+  @media (hover: hover) {
+    .field-help:hover {
+      background-color: rgb(47 123 134 / 0.1);
+    }
+  }
+
+  .field-help-panel {
+    @apply tw:absolute tw:-translate-y-full tw:rounded-2xl tw:border tw:bg-white tw:p-4 tw:text-sm tw:leading-relaxed;
+    color: var(--color-black);
+    border-color: var(--color-control-border);
+    box-shadow: 0 8px 24px rgb(10 39 72 / 0.16);
+  }
+
+  .field input[type="checkbox"] {
+    @apply tw:appearance-none tw:size-6 tw:m-0 tw:flex-none tw:border-2 tw:border-gray tw:rounded-lg;
+    box-sizing: border-box;
+    accent-color: var(--color-teal-blue);
+
+    &:checked {
+      @apply tw:bg-vibrant-orange;
+    }
+  }
+
+  input[type="text"],
+  input[type="password"] {
+    @apply tw:w-full tw:min-w-0 tw:px-4 tw:py-2 tw:border-2 tw:rounded-full tw:font-display tw:text-lg;
+    box-sizing: border-box;
+    border-color: var(--color-control-border);
+
+    &::placeholder {
+      color: var(--color-placeholder);
+      opacity: 1;
+    }
+
+    &:focus {
+      border-color: var(--color-deep-navy);
+    }
+  }
+
+  :where(a, button, input, [tabindex]):focus-visible,
+  .alert:focus {
+    outline: 3px solid var(--color-deep-navy);
+    outline-offset: 2px;
+  }
+
+  .card {
+    @apply tw:bg-white tw:rounded-4xl;
+  }
+
+  .alert {
+    @apply tw:flex tw:gap-4 tw:px-4 tw:py-2 tw:rounded-2xl tw:text-white tw:font-display tw:text-base tw:leading-relaxed;
+    align-items: center;
+
+    &.alert-success {
+      @apply tw:bg-success;
+    }
+
+    &.alert-error {
+      @apply tw:bg-error;
+      align-items: flex-start;
+    }
+  }
+}

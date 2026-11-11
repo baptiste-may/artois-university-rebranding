@@ -1,0 +1,10 @@
+pre-commit:
+  commands:
+    eslint:
+      glob: "*.{js,mjs,cjs,ts,mts,cts,tsx}"
+      run: bunx eslint --fix {staged_files}
+      stage_fixed: true
+    prettier:
+      glob: "*.{js,mjs,cjs,ts,mts,cts,tsx,json,jsonc,css,md,yml,yaml}"
+      run: bunx prettier --write --ignore-unknown {staged_files}
+      stage_fixed: true

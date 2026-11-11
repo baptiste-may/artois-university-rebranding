@@ -1,0 +1,82 @@
+<!-- Simplified version of the CAS login page: https://sso.univ-artois.fr/cas/login -->
+<table width="100%" height="100%" cellspacing="0" cellpadding="0" border="0">
+  <tbody>
+    <tr>
+      <td height="560" align="center">
+        <table
+          width="780"
+          height="560"
+          cellspacing="0"
+          cellpadding="0"
+          border="0"
+          background="/cas/themes/artois_2005/images/bg.png"
+        >
+          <tbody>
+            <tr>
+              <td>
+                <form method="post" id="fm1" action="login">
+                  <span>
+                    <font size="2" face="verdana" color="#ffffff"><p></p></font>
+                  </span>
+                  <span>
+                    <a href="http://www.univ-artois.fr" target="_blank">
+                      <img src="/cas/themes/artois_2005/images/univ_trans.png" />
+                    </a>
+                  </span>
+                  <blockquote>
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <input
+                              id="username"
+                              name="username"
+                              value="Votre identifiant"
+                              type="text"
+                              size="30"
+                              autocomplete="false"
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="image"
+                              name="submit"
+                              src="/cas/themes/artois_2005/images/login.png"
+                            />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <input
+                              id="password"
+                              name="password"
+                              value="mot de passe"
+                              type="password"
+                              size="30"
+                              autocomplete="false"
+                            />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <input id="warn" name="warn" value="true" type="checkbox" />
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </blockquote>
+                  <div id="login-form-controls">
+                    <section class="cas-field">
+                      <input type="hidden" name="_eventId" value="submit" />
+                      <input type="hidden" name="geolocation" />
+                    </section>
+                  </div>
+                </form>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+  </tbody>
+</table>
