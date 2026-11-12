@@ -7,12 +7,54 @@ import { ensureIconSprite } from "../../shared/icons";
 import {
   CARD_ATTRIBUTE,
   CARD_SELECTOR,
+  ERROR_HEADING_SELECTOR,
   ERROR_ID,
+  ERROR_MESSAGE_SELECTOR,
   FORM_ID,
   ROOT_CLASS,
   TITLE_ID,
 } from "./cas-login.constants";
-import { renderFooter, renderForm, renderHeader } from "./cas-login.templates";
+import { renderErrorCard, renderFooter, renderForm, renderHeader } from "./cas-login.templates";
+
+type CasVariant = "login" | "error";
+
+function detectCasVariant(): CasVariant {
+  if (document.getElementById(FORM_ID)) {
+    return "login";
+  }
+
+  if (
+    document.querySelector(ERROR_HEADING_SELECTOR) &&
+    document.querySelector(ERROR_MESSAGE_SELECTOR)
+  ) {
+    return "error";
+  }
+
+  if (document.querySelector(`[${CARD_ATTRIBUTE}] #${ERROR_ID}`)) {
+    return "error";
+  }
+
+  throw new MissingElementError(
+    `#${FORM_ID} ou page d'erreur CAS (${ERROR_HEADING_SELECTOR}, ${ERROR_MESSAGE_SELECTOR})`,
+  );
+}
+
+function readText(element: Element | null): string {
+  return (element?.textContent ?? "").replace(/\s+/g, " ").trim();
+}
+
+function readErrorContent(): { title: string; message: string } {
+  const title = readText(document.querySelector(ERROR_HEADING_SELECTOR));
+  const message = readText(document.querySelector(ERROR_MESSAGE_SELECTOR));
+
+  if (!title || !message) {
+    throw new MissingElementError(
+      `${ERROR_HEADING_SELECTOR} / ${ERROR_MESSAGE_SELECTOR} (contenu de l'erreur)`,
+    );
+  }
+
+  return { title, message };
+}
 
 function setHelpExpanded(button: HTMLElement, expanded: boolean): void {
   button.setAttribute("aria-expanded", String(expanded));
@@ -72,6 +114,11 @@ function getForm(): HTMLFormElement {
 }
 
 function assertCasLoginShape(): void {
+  if (detectCasVariant() === "error") {
+    readErrorContent();
+    return;
+  }
+
   const form = getForm();
   getCardBody();
   getCardCell();
@@ -91,9 +138,22 @@ function applyBodyTheme(): void {
   document.documentElement.classList.add(ROOT_CLASS);
   body.removeAttribute("style");
   body.classList.add("tw:bg-teal-blue", "tw:font-display");
+
+  if (detectCasVariant() === "error") {
+    body.classList.add(
+      "tw:grid",
+      "tw:place-items-center",
+      "tw:min-h-screen",
+      "tw:m-0",
+      "tw:p-4",
+      "tw:box-border",
+    );
+  }
 }
 
 function applyCardLayout(): void {
+  if (detectCasVariant() !== "login") return;
+
   const card = getCard();
   const cell = getCardCell();
 
@@ -110,7 +170,18 @@ function applyCardLayout(): void {
 }
 
 function injectHeader(): void {
+  if (detectCasVariant() !== "login") return;
+
   $(getCardBody()).prepend(renderHeader());
+}
+
+function renderErrorVariant(): void {
+  if (detectCasVariant() !== "error") return;
+
+  const { title, message } = readErrorContent();
+  document.body.insertAdjacentHTML("beforeend", renderErrorCard(title, message));
+  document.querySelector(ERROR_HEADING_SELECTOR)?.remove();
+  document.querySelector(ERROR_MESSAGE_SELECTOR)?.remove();
 }
 
 function applyFavicon(): void {
@@ -141,6 +212,8 @@ function readStatusText(): string {
 }
 
 function replaceFormFields(): void {
+  if (detectCasVariant() !== "login") return;
+
   const $form = $(getForm());
   const error = readStatusText();
 
@@ -158,6 +231,8 @@ function replaceFormFields(): void {
 }
 
 function bindHelpPanels(): void {
+  if (detectCasVariant() !== "login") return;
+
   const $form = $(getForm());
   const $helpButtons = $form.find(".field-help");
 
@@ -196,6 +271,8 @@ function bindHelpPanels(): void {
 }
 
 function injectFooter(): void {
+  if (detectCasVariant() !== "login") return;
+
   $(getCardBody()).append(renderFooter());
 }
 
@@ -218,6 +295,7 @@ export const casLoginPage = {
     { name: "body", run: applyBodyTheme },
     { name: "card-layout", run: applyCardLayout },
     { name: "header", run: injectHeader },
+    { name: "error-card", run: renderErrorVariant },
     { name: "favicon", run: applyFavicon },
     { name: "form", run: replaceFormFields },
     { name: "help-panels", run: bindHelpPanels },

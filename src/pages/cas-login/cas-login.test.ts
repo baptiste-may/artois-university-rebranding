@@ -4,6 +4,7 @@ import type { Logger } from "../../core/logger";
 import { runPage, type RunReport } from "../../core/page";
 import { ICON_NAMES, ICON_SPRITE_ID } from "../../shared/icons";
 import casLoginHtml from "./__fixtures__/cas-login.html?raw";
+import casUnauthorizedHtml from "./__fixtures__/cas-unauthorized.html?raw";
 import { casLoginPage } from "./cas-login";
 
 const silentLogger: Logger = {
@@ -271,6 +272,61 @@ describe("casLoginPage", () => {
     expect(document.activeElement?.id).toBe("username");
     expect(form.querySelector("#username")?.hasAttribute("aria-invalid")).toBe(false);
     expect(password?.hasAttribute("aria-invalid")).toBe(false);
+  });
+
+  it("should rebrand the unauthorized-service page with the shared card shell", async () => {
+    document.body.innerHTML = casUnauthorizedHtml;
+
+    const report = await runCasLogin();
+
+    expect(report.status).toBe("ok");
+    expect(document.documentElement.classList.contains("artois-rebranding")).toBe(true);
+    expect(document.body.classList.contains("tw:bg-teal-blue")).toBe(true);
+    expect(document.body.classList.contains("tw:font-display")).toBe(true);
+    expect(document.body.classList.contains("tw:grid")).toBe(true);
+    expect(document.body.classList.contains("tw:place-items-center")).toBe(true);
+    expect(document.body.classList.contains("tw:min-h-screen")).toBe(true);
+    expect(document.body.hasAttribute("style")).toBe(false);
+    expect(document.querySelector("body > h2")).toBeNull();
+    expect(document.querySelector("body > p")).toBeNull();
+
+    const card = getCard();
+    expect(card.closest("main")).not.toBeNull();
+    expect(card.getAttribute("role")).toBe("presentation");
+    expect(card.querySelectorAll("tbody > tr")).toHaveLength(3);
+    expect(card.querySelector("h1#login-title")?.textContent).toContain(
+      "Service d'Authentification Artois",
+    );
+    expect(card.textContent).toContain("Pour des raisons de sécurité");
+    expect(card.querySelector("form")).toBeNull();
+
+    const alert = card.querySelector("#login-error");
+    expect(alert?.getAttribute("role")).toBe("alert");
+    expect(alert?.getAttribute("aria-live")).toBe("assertive");
+    expect(alert?.getAttribute("aria-atomic")).toBe("true");
+    expect(alert?.classList.contains("alert-error")).toBe(true);
+    expect(alert?.querySelector("h2")?.textContent).toBe(
+      "Application non autorisée à utiliser CAS",
+    );
+    expect(alert?.querySelector("p")?.textContent).toContain("n'est pas autorisée à utiliser CAS");
+    expect(alert?.querySelector("use")?.getAttribute("href")).toBe("#artois-icon-alert-triangle");
+    expect(document.activeElement?.id).toBe("login-error");
+
+    const icons = document.head.querySelectorAll<HTMLLinkElement>('link[rel~="icon"]');
+    expect(icons).toHaveLength(1);
+    expect(icons[0]?.href).toBe(card.querySelector("img")?.src);
+  });
+
+  it("should abort the error variant when its message is missing", async () => {
+    const html = "<h2>Application non autorisée à utiliser CAS</h2>";
+    document.body.innerHTML = html;
+
+    const report = await runCasLogin();
+
+    expect(report.status).toBe("aborted");
+    expect(document.body.innerHTML).toBe(html);
+    expect(document.body.classList.contains("tw:bg-teal-blue")).toBe(false);
+    expect(document.documentElement.classList.contains("artois-rebranding")).toBe(false);
   });
 
   it("should abort without touching the page when the expected structure is missing", async () => {

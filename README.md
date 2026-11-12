@@ -33,15 +33,16 @@ Plutôt que de modifier le serveur, ce projet injecte une **couche de présentat
 - un design system centralisé, facile à faire évoluer ;
 - des tests unitaires sur des fixtures HTML réelles.
 
-**État actuel :** version `0.1.0`, page de connexion CAS rebrandée. Les autres pages restent à inventorier avant toute implémentation.
+**État actuel :** version `0.1.0`, page de connexion CAS et variante « service non autorisé » rebrandées. Les autres pages restent à inventorier avant toute implémentation.
 
 **Ligne directrice :** moderniser les éléments déjà présents sans ajouter de fonctionnalités, de liens ou de contenu propres au userscript. Les adaptations nécessaires à l'accessibilité font exception.
 
-**Périmètre actuel :** le userscript est injecté sur `https://*.univ-artois.fr/*`, mais il ne modifie que les pages déclarées dans `src/pages/index.ts`. Seule la page de connexion CAS est prise en charge pour l'instant ; les autres pages sont ignorées sans effet de bord.
+**Périmètre actuel :** le userscript est injecté sur `https://*.univ-artois.fr/*`, mais il ne modifie que les pages déclarées dans `src/pages/index.ts`. Les vues CAS `/cas/login` (formulaire, erreur de connexion et service non autorisé) et `/cas/logout` sont prises en charge ; les autres pages sont ignorées sans effet de bord.
 
 | Élément                    | Statut | Détail                                                           |
 | -------------------------- | :----: | ---------------------------------------------------------------- |
 | Connexion CAS `/cas/login` |   ✅   | Header, logo, champs, aides contextuelles, alerte, footer        |
+| Service non autorisé       |   ✅   | Même carte, alerte à la place du formulaire                      |
 | Responsive mobile          |   ✅   | Injection d'un meta viewport                                     |
 | Design system              |   ✅   | Palette, Inter, composants de base, icônes Papicons (sprite)     |
 | Tests                      |   ✅   | Tests sur la page CAS, le cœur du script et les helpers partagés |
@@ -50,19 +51,21 @@ Plutôt que de modifier le serveur, ce projet injecte une **couche de présentat
 
 ## Aperçu
 
-| Avant                                 | Après                                    |
-| ------------------------------------- | ---------------------------------------- |
-| Table HTML 780×560 avec image de fond | Carte blanche responsive, coins arrondis |
-| Police Verdana 10 px                  | Inter, tailles lisibles                  |
-| Champs sans labels explicites         | Labels, icônes, champs accessibles       |
-| Bouton image                          | Bouton orange accessible                 |
-| Erreur brute dans `#status`           | Alerte `alert-error` stylée              |
-| Pas de viewport mobile                | Meta viewport injectée                   |
-| Footer sécurité en petits caractères  | Bloc d'information lisible               |
+| Avant                                 | Après                                       |
+| ------------------------------------- | ------------------------------------------- |
+| Table HTML 780×560 avec image de fond | Carte blanche responsive, coins arrondis    |
+| Police Verdana 10 px                  | Inter, tailles lisibles                     |
+| Champs sans labels explicites         | Labels, icônes, champs accessibles          |
+| Bouton image                          | Bouton orange accessible                    |
+| Erreur brute dans `#status`           | Alerte `alert-error` stylée                 |
+| Page 403 « service non autorisé »     | Même carte, alerte à la place du formulaire |
+| Pas de viewport mobile                | Meta viewport injectée                      |
+| Footer sécurité en petits caractères  | Bloc d'information lisible                  |
 
 ## Fonctionnalités
 
 - 🎨 **Rebranding du login CAS** — header avec logo, champs accessibles, bouton orange, alerte d'erreur, footer de sécurité.
+- 🚫 **Page service non autorisé** — même carte que le login, avec l'alerte CAS à la place du formulaire.
 - 📱 **Responsive** — injection d'un meta viewport et mise en page adaptative.
 - ♿ **Accessibilité** — labels explicites, aides contextuelles accessibles, focus visible, animations réduites et erreurs annoncées. La conformité globale RGAA / WCAG AA reste à auditer.
 - 🧩 **Design system** — palette, composants et sprite d'icônes Papicons.
@@ -233,18 +236,12 @@ Les icônes viennent de **[Papicons](https://github.com/PapillonApp/Papicons)** 
 
 Pages et onglets à rebrander. Les intitulés non observés, notamment dans l'espace authentifié, restent à confirmer.
 
-### Authentification et compte
+### Authentification
 
-- [x] Connexion CAS
-- [x] Déconnexion CAS
-- [ ] Session expirée
+- [x] Connexion CAS — erreurs `#status` et session expirée incluses
+- [x] Déconnexion CAS — redirection vers le service ou le login ENT
+- [x] Erreur CAS — service non autorisé
 - [ ] Avertissement avant redirection
-- [ ] Erreur CAS / service non autorisé
-- [ ] Consentement CAS (si présent)
-- [ ] Authentification multifacteur (si présente)
-- [ ] Activation de compte
-- [ ] Mot de passe oublié
-- [ ] Changement de mot de passe
 
 ### ENT public
 

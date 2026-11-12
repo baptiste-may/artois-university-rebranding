@@ -8,6 +8,11 @@ type LoginFormProps = {
   error: string;
 };
 
+type ErrorAlertProps = {
+  title: string;
+  message: string;
+};
+
 function Header() {
   return (
     <tr>
@@ -39,7 +44,7 @@ function LoginForm({ error }: LoginFormProps) {
           aria-atomic="true"
           tabIndex={-1}
         >
-          <Icon name="alert-triangle" />
+          <Icon name="alert-triangle" className="tw:shrink-0" />
           <span className="alert-text" />
         </div>
       )}
@@ -130,6 +135,29 @@ function LoginForm({ error }: LoginFormProps) {
   );
 }
 
+function ErrorAlert({ title, message }: ErrorAlertProps) {
+  return (
+    <tr>
+      <td className="tw:p-6 tw:sm:p-8">
+        <div
+          id={ERROR_ID}
+          className="alert alert-error"
+          role="alert"
+          aria-live="assertive"
+          aria-atomic="true"
+          tabIndex={-1}
+        >
+          <Icon name="alert-triangle" className="tw:shrink-0" />
+          <div className="tw:min-w-0">
+            <h2 className="tw:m-0 tw:text-lg tw:font-bold">{title}</h2>
+            <p className="tw:m-0 tw:mt-2">{message}</p>
+          </div>
+        </div>
+      </td>
+    </tr>
+  );
+}
+
 function Footer() {
   return (
     <tr>
@@ -152,12 +180,34 @@ function Footer() {
   );
 }
 
+function ErrorCard({ title, message }: ErrorAlertProps) {
+  return (
+    <main className="tw:w-full tw:max-w-xl tw:mx-auto">
+      <table
+        className="card tw:w-full! tw:max-w-xl!"
+        role="presentation"
+        data-rebranding-card="true"
+      >
+        <tbody>
+          <Header />
+          <ErrorAlert title={title} message={message} />
+          <Footer />
+        </tbody>
+      </table>
+    </main>
+  );
+}
+
 export function renderHeader(): string {
   return renderToStaticMarkup(<Header />);
 }
 
 export function renderForm(error: string): string {
   return renderToStaticMarkup(<LoginForm error={error} />);
+}
+
+export function renderErrorCard(title: string, message: string): string {
+  return renderToStaticMarkup(<ErrorCard title={title} message={message} />);
 }
 
 export function renderFooter(): string {
