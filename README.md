@@ -236,7 +236,7 @@ Pages et onglets à rebrander. Les intitulés non observés, notamment dans l'es
 ### Authentification et compte
 
 - [x] Connexion CAS
-- [ ] Déconnexion CAS
+- [x] Déconnexion CAS
 - [ ] Session expirée
 - [ ] Avertissement avant redirection
 - [ ] Erreur CAS / service non autorisé
